@@ -7,15 +7,16 @@ With `tactopro`, there's no need to manually interact with the `tacto` package o
 ```py
 from tactopro import TactoPro
 
-tp = TactoPro("xxx.stl")
-frames = tp.sample_frames_uniformly(100)
-tp.save(frames, "dataset")
+tp = TactoPro("public/hkust.stl")
+frames = tp.sample_frames_uniformly(500)
+tp.save(frames, "public/hkust")
 ```
 
 After running the `example.py`, you'll get results similar to the following:
 
 <p align="center"> 
-    <img src="./public/image.png" width=60%>
+    <img src="./public/hkust/illustration.png" width=60%>
+    <img src="./public/hkust/rgbframes/17.png" width=10%>
 </p>
 
 ## Setup
