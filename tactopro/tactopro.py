@@ -163,10 +163,7 @@ class TactoPro:
 
         for i, frame in enumerate(frames):
             cv2.imwrite(osp.join(rgbframe_path, f"{i}.png"), frame.rgbframe)
-            cv2.imwrite(
-                osp.join(heightmap_path, f"{i}.png"),
-                frame.heightmap.astype(np.float32),
-            )
+            np.save(osp.join(heightmap_path, f"{i}.npy"), frame.heightmap)
             cv2.imwrite(
                 osp.join(contactmask_path, f"{i}.png"),
                 255 * frame.contactmask.astype(np.uint8),

@@ -1,21 +1,40 @@
-# TACTO Pro:
+# TACTO Pro
 
-With `tactopro`, you don't need to manually operate the `tacto` package or write a lot of code to sample tactile images. All you need are the following:
+TACTO Pro is a lightweight wrapper designed to streamline the creation of TACTO simulations, significantly reducing code complexity and boilerplate. It supports Python versions 3.8 through 3.13.
+
+With `tactopro`, there's no need to manually interact with the `tacto` package or write extensive custom code to sample tactile images. Simply follow this workflow:
 
 ```py
 from tactopro import TactoPro
 
-tp = TactoPro("xxx.STL")
-frames = tp.sample_frames_uniformly(2)
+tp = TactoPro("xxx.stl")
+frames = tp.sample_frames_uniformly(1000)
 tp.save(frames, "dataset")
 ```
 
-Then you would get something like:
+After running the code, you'll get results similar to the following:
 
-## Install
+<p align="center"> 
+    <img src="./public/image.png" width=60%>
+</p>
+
+## Setup
+
+You can install TACTO Pro using pip:
+
+```sh
+pip install tactopro@git+https://github.com/ZhangzrJerry/TactoPro.git
+```
+
+Alternatively, clone the repository and install it manually:
+
+```sh
+git clone https://github.com/ZhangzrJerry/TactoPro && cd TactoPro
+pip install -e .
+```
 
 ## License
 
 This project is licensed under the MIT License, as detailed in the [LICENSE](./LICENSE) file.
 
-Some visualization utilities and rendering functions are adapted from [MidasTouch](https://github.com/facebookresearch/MidasTouch), which is primarily distributed under the MIT License. Portions of the code are available under separate license terms: FCRN-DepthPrediction is licensed under the BSD 2-Clause License, and pytorch3d is licensed under the BSD 3-Clause License.
+Some visualization utilities and rendering functions are adapted from [MidasTouch](https://github.com/facebookresearch/MidasTouch), which is primarily distributed under the MIT License.

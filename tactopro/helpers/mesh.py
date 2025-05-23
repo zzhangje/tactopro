@@ -205,8 +205,9 @@ def random_geodesic_poses(mesh, shear_mag=5.0, total_length=0.5, N=2000):
         mask = waypoint_dist < 0.01
         candidates = np.ma.MaskedArray(candidates, mask=mask)
         candidates = candidates.compressed()
-        print(candidates)
-        print(np.shape(candidates))
+        if len(candidates) == 0:
+            print("No candidates found, trajectory cannot be applied!")
+            return None
         seg_end = candidates[0]
         seg_dist = geo_dist[seg_end]
         waypoints = np.concatenate((waypoints, V[seg_end, None]), axis=0)
