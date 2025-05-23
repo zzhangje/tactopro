@@ -6,7 +6,6 @@
 import numpy as np
 from typing import Tuple
 from scipy.spatial.transform import Rotation as R
-import torch
 
 
 def skew_matrix(v: np.ndarray) -> np.ndarray:
@@ -27,7 +26,7 @@ def skew_matrix(v: np.ndarray) -> np.ndarray:
     return mat
 
 
-def tf_to_xyzquat_numpy(pose: torch.Tensor) -> torch.Tensor:
+def tf_to_xyzquat_numpy(pose: np.ndarray) -> np.ndarray:
     """
     convert 4 x 4 transformation matrices to [x, y, z, qx, qy, qz, qw]
     """

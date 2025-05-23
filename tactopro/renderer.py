@@ -20,7 +20,6 @@ from .helpers.pose import (
 from scipy.spatial.transform import Rotation as R
 
 import trimesh
-import torch
 import random
 
 DEBUG = False
