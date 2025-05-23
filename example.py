@@ -1,5 +1,5 @@
 from tactopro import TactoPro
 
-tp = TactoPro("tests/data/digit.STL")
-frames = tp.sample_frames_uniformly(2)
-tp.save(frames, "tests/tmp/digit")
+tp = TactoPro("tests/data/object.stl")
+frames = tp.sample_frames_trajectory(100)
+tp.save(frames, "tests/tmp/object")
