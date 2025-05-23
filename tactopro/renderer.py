@@ -35,7 +35,7 @@ class RendererConfig:
     cam_dist: float = 0.022
     min_pen: float = 0.0005
     max_pen: float = 0.001
-    bg_id: int = 0
+    bg_id: int = 30
     headless: bool = False
     randomize: bool = False
 
