@@ -8,11 +8,11 @@ With `tactopro`, there's no need to manually interact with the `tacto` package o
 from tactopro import TactoPro
 
 tp = TactoPro("xxx.stl")
-frames = tp.sample_frames_uniformly(1000)
+frames = tp.sample_frames_uniformly(100)
 tp.save(frames, "dataset")
 ```
 
-After running the code, you'll get results similar to the following:
+After running the `example.py`, you'll get results similar to the following:
 
 <p align="center"> 
     <img src="./public/image.png" width=60%>
