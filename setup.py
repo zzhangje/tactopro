@@ -13,6 +13,9 @@ setup(
     author="Zirui Zhang",
     author_email="zhangzrjerry@outlook.com",
     packages=["tactopro"],
+    install_requires=[
+    req.strip() for req in open("requirements.txt").readlines() if req.strip() and not req.startswith("#")
+    ],
     classifiers=[
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3.8",
