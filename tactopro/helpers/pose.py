@@ -4,7 +4,6 @@
 # LICENSE file in the root directory of this source tree.
 
 import numpy as np
-from typing import Tuple
 from scipy.spatial.transform import Rotation as R
 
 

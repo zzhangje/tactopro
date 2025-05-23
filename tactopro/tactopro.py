@@ -6,7 +6,6 @@ import os.path as osp
 import os
 import pickle
 import cv2
-from PIL import Image
 from .renderer import Renderer, RendererConfig
 from .helpers.viz import viz_poses_pointclouds_on_mesh
 from .helpers.mesh import sample_poses_on_mesh, random_geodesic_poses
