@@ -7,9 +7,9 @@ With `tactopro`, there's no need to manually interact with the `tacto` package o
 ```py
 from tactopro import TactoPro
 
-tp = TactoPro("xxx.stl")
-frames = tp.sample_frames_uniformly(100)
-tp.save(frames, "dataset")
+tp = TactoPro("tests/data/object.stl")
+frames = tp.sample_frames_uniformly(2000)
+tp.save(frames, "public/example")
 ```
 
 After running the `example.py`, you'll get results similar to the following:
