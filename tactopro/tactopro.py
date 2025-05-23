@@ -43,7 +43,7 @@ class TactoPro:
         return self._trimesh
     
 
-    def sample_poses_uniformly(self, num_samples: int = 1000) -> List[TactoFrame]:
+    def sample_frames_uniformly(self, num_samples: int = 1000) -> List[TactoFrame]:
         """
         Randomly samples frames from the mesh.
         Args:
@@ -55,7 +55,7 @@ class TactoPro:
         return [TactoFrame(rgbframe=point, heightmap=None, contactmask=None, campose=None, gelpose=None) for point in sampled_points]
     
 
-    def sample_poses_trajectory(self, num_samples: int = 1000) -> List[TactoFrame]:
+    def sample_frames_trajectory(self, num_samples: int = 1000) -> List[TactoFrame]:
         """
         Samples frames along a trajectory on the mesh.
         Args:
@@ -68,7 +68,7 @@ class TactoPro:
         return [TactoFrame(rgbframe=point, heightmap=None, contactmask=None, campose=None, gelpose=None) for point in sampled_points]
     
 
-    def sample_poses_manually(self, poses: List[np.ndarray]) -> List[TactoFrame]:
+    def sample_frames_manually(self, poses: List[np.ndarray]) -> List[TactoFrame]:
         """
         Samples frames based on manually specified poses.
         Args:
@@ -96,7 +96,7 @@ class TactoPro:
         while osp.exists(save_path):
             save_path = f"{base_path}_{count}"
             count += 1
-        os.makedirs(osp.dirname(save_path))
+        os.makedirs(osp.dirname(save_path), exist_ok=True)
         print(f"Saving data to {save_path}")
 
         rgbframe_path = osp.join(save_path, "rgbframes")
