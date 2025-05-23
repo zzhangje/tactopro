@@ -1,3 +1,5 @@
 tacto @ git+https://github.com/zhangzrjerry/tactopatch.git
 
 pyvista
+potpourri3d
+scikit-learn
