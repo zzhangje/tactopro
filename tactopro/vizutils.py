@@ -11,8 +11,13 @@ import trimesh
 from typing import List
 from scipy.spatial.transform import Rotation as R
 
+
 def viz_poses_pointclouds_on_mesh(
-    trimesh: trimesh.Trimesh, poses: List[np.ndarray], pointclouds: List[np.ndarray], save_path: str, decimation_factor: int = 10
+    trimesh: trimesh.Trimesh,
+    poses: List[np.ndarray],
+    pointclouds: List[np.ndarray],
+    save_path: str,
+    decimation_factor: int = 10,
 ) -> None:
     """
     Visualizes a set of 4x4 pose matrices and associated pointclouds on a given mesh using PyVista.
@@ -96,7 +101,7 @@ def draw_poses(
     names = ["xvectors", "yvectors", "zvectors"]
     colors = ["r", "g", "b"]
     cluster_centers = cluster_poses[:, :3, 3]
-    for (q, c, n) in zip(quivers, colors, names):
+    for q, c, n in zip(quivers, colors, names):
         plotter.add_arrows(
             cluster_centers,
             q,

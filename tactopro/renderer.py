@@ -6,18 +6,19 @@
 
 import numpy as np
 
+
 class Renderer:
     """
     Renderer class for rendering tactile data.
     """
-    
+
     def heightmap_to_pointcloud(self, heightmap: np.ndarray) -> np.ndarray:
         """
         Converts a heightmap to a point cloud.
-        
+
         Args:
             heightmap (np.ndarray): The heightmap to convert.
-        
+
         Returns:
             np.ndarray: The resulting point cloud.
         """
