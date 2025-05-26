@@ -73,9 +73,9 @@ def viz_poses_pointclouds_on_mesh(
 
     if save_path:
         plotter.show(screenshot=save_path)
-        print(f"Save path: {save_path}")
     else:
         plotter.show()
+
     plotter.close()
     pv.close_all()
 

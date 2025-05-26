@@ -27,6 +27,7 @@ class TactoFrame:
     rgbframe: np.ndarray
     heightmap: np.ndarray
     contactmask: np.ndarray
+    pointcloud: np.ndarray
     campose: np.ndarray
     gelpose: np.ndarray
 
@@ -193,12 +194,20 @@ class TactoPro:
 
             # visualize point cloud
             illustration_path = osp.join(save_path, "illustration.png")
-            viz_poses_pointclouds_on_mesh(
-                self._trimesh,
-                np.array([frame.gelpose for frame in frames[::10]]),
-                pc_all,
-                save_path=illustration_path,
-            )
+            try:
+                viz_poses_pointclouds_on_mesh(
+                    self._trimesh,
+                    np.array([frame.gelpose for frame in frames[::5]]),
+                    pc_all,
+                    decimation_factor=20,
+                    save_path=illustration_path,
+                )
+                if osp.exists(illustration_path):
+                    print(f"Visualization saved to {illustration_path}, successfully")
+                else:
+                    print(f"Visualization failed to save to {illustration_path}")
+            except Exception as e:
+                print(f"Visualization failed to save to {illustration_path}: {e}")
 
         pass
 
@@ -232,6 +241,9 @@ class TactoPro:
                     rgbframe=rgbframes[i],
                     heightmap=heightmaps[i],
                     contactmask=contactmasks[i],
+                    pointcloud=self._renderer.heightmap_to_pointcloud(heightmaps[i])[
+                        contactmasks[i].reshape(-1)
+                    ],
                     campose=camposes[i],
                     gelpose=gelposes[i],
                 )
