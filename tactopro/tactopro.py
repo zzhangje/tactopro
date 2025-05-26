@@ -123,7 +123,9 @@ class TactoPro:
     #     sampled_poses = []
     #     return self._get_frames_from_poses(sampled_poses)
 
-    def save(self, frames: List[TactoFrame], save_path: str):
+    def save(
+        self, frames: List[TactoFrame], save_path: str, ycb_slide_type: bool = False
+    ):
         """
         Saves the sampled frames to a specified path.
         Args:
@@ -139,34 +141,43 @@ class TactoPro:
         while osp.exists(save_path):
             save_path = f"{base_path}_{count}"
             count += 1
-        os.makedirs(osp.dirname(save_path), exist_ok=True)
-        print(f"Saving data to {save_path}")
+        os.makedirs(save_path, exist_ok=True)
+        print(
+            f"Saving data to {save_path}, create {'successfully' if osp.exists(save_path) else 'failed'}"
+        )
 
-        rgbframe_path = osp.join(save_path, "rgbframes")
-        heightmap_path = osp.join(save_path, "heightmaps")
-        contactmask_path = osp.join(save_path, "contactmasks")
-        pose_path = osp.join(save_path, "poses.pkl")
+        if ycb_slide_type:
+            rgbframe_path = osp.join(save_path, "rgbframes")
+            heightmap_path = osp.join(save_path, "heightmaps")
+            contactmask_path = osp.join(save_path, "contactmasks")
+            pose_path = osp.join(save_path, "poses.pkl")
 
-        os.makedirs(rgbframe_path)
-        os.makedirs(heightmap_path)
-        os.makedirs(contactmask_path)
+            os.makedirs(rgbframe_path)
+            os.makedirs(heightmap_path)
+            os.makedirs(contactmask_path)
 
-        with open(pose_path, "wb") as f:
-            pickle.dump(
-                {
-                    "camposes": [frame.campose for frame in frames],
-                    "gelposes": [frame.gelpose for frame in frames],
-                },
-                f,
-            )
+            with open(pose_path, "wb") as f:
+                pickle.dump(
+                    {
+                        "camposes": [frame.campose for frame in frames],
+                        "gelposes": [frame.gelpose for frame in frames],
+                    },
+                    f,
+                )
+                f.close()
 
-        for i, frame in enumerate(frames):
-            cv2.imwrite(osp.join(rgbframe_path, f"{i}.png"), frame.rgbframe)
-            np.save(osp.join(heightmap_path, f"{i}.npy"), frame.heightmap)
-            cv2.imwrite(
-                osp.join(contactmask_path, f"{i}.png"),
-                255 * frame.contactmask.astype(np.uint8),
-            )
+            for i, frame in enumerate(frames):
+                cv2.imwrite(osp.join(rgbframe_path, f"{i}.png"), frame.rgbframe)
+                np.save(osp.join(heightmap_path, f"{i}.npy"), frame.heightmap)
+                cv2.imwrite(
+                    osp.join(contactmask_path, f"{i}.png"),
+                    255 * frame.contactmask.astype(np.uint8),
+                )
+        else:
+            for i, frame in enumerate(frames):
+                with open(osp.join(save_path, f"{i}.pkl"), "wb") as f:
+                    pickle.dump(frame, f)
+                f.close()
 
         if not self._config.headless:
             # prepare point cloud
