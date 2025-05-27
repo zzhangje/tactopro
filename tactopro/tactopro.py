@@ -12,6 +12,7 @@ from .helpers.mesh import sample_poses_on_mesh, random_geodesic_poses
 from tqdm import tqdm
 from PIL import Image
 from .helpers.pose import quat_to_SE3
+import open3d as o3d
 
 
 @dataclass
@@ -155,11 +156,13 @@ class TactoPro:
             rgbframe_path = osp.join(save_path, "rgbframes")
             heightmap_path = osp.join(save_path, "heightmaps")
             contactmask_path = osp.join(save_path, "contactmasks")
+            pointcloud_path = osp.join(save_path, "pointclouds")
             pose_path = osp.join(save_path, "poses.pkl")
 
             os.makedirs(rgbframe_path)
             os.makedirs(heightmap_path)
             os.makedirs(contactmask_path)
+            os.makedirs(pointcloud_path)
 
             with open(pose_path, "wb") as f:
                 pickle.dump(
@@ -178,6 +181,9 @@ class TactoPro:
                     osp.join(contactmask_path, f"{i}.png"),
                     255 * frame.contactmask.astype(np.uint8),
                 )
+                pcd = o3d.geometry.PointCloud()
+                pcd.points = o3d.utility.Vector3dVector(frame.pointcloud)
+                o3d.io.write_point_cloud(osp.join(pointcloud_path, f"{i}.pcd"), pcd)
         else:
             for i, frame in enumerate(frames):
                 with open(osp.join(save_path, f"{i}.pkl"), "wb") as f:
