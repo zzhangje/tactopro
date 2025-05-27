@@ -1,5 +1,7 @@
 # TACTO Pro
 
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/zhangzrjerry/tactopro/python-package.yml)
+
 TACTO Pro is a lightweight wrapper designed to streamline the creation of TACTO simulations, significantly reducing code complexity and boilerplate. It supports Python versions 3.8 through 3.13.
 
 With `tactopro`, there's no need to manually interact with the `tacto` package or write extensive custom code to sample tactile images. Simply follow this workflow:
@@ -38,4 +40,4 @@ pip install -e .
 
 This project is licensed under the MIT License, as detailed in the [LICENSE](./LICENSE) file.
 
-Some visualization utilities and rendering functions are adapted from [MidasTouch](https://github.com/facebookresearch/MidasTouch), which is primarily distributed under the MIT License.
+Most visualization utilities and rendering functions are adapted from [MidasTouch](https://github.com/facebookresearch/MidasTouch), which is primarily distributed under the MIT License.

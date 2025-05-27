@@ -7,7 +7,7 @@ from setuptools import setup
 
 setup(
     name="tactopro",
-    version="0.0.1",
+    version="0.0.2",
     author="Zirui Zhang",
     author_email="zhangzrjerry@outlook.com",
     packages=["tactopro"],
