@@ -41,36 +41,6 @@ class TactoFrame:
         t = self.campose[:3, 3]
         return (R @ self.pointcloud.T).T + t
 
-    @staticmethod
-    def load_from_ycbslide(file_path: str, idx: int) -> "TactoFrame":
-        try:
-            c_path = os.path.join(file_path, "gt_contactmasks", f"{idx}.jpg")
-            h_path = os.path.join(file_path, "gt_heightmaps", f"{idx}.jpg")
-            i_path = os.path.join(file_path, "tactile_images", f"{idx}.jpg")
-            c = np.array(Image.open(c_path)).astype(bool)
-            h = np.array(Image.open(h_path)).astype(np.int64)
-            i = np.array(Image.open(i_path)).astype(np.uint8)
-
-            with open(os.path.join(file_path, "tactile_data.pkl"), "rb") as f:
-                data = pickle.load(f)
-                cam_pose = quat_to_SE3(data["camposes"][idx])
-                gel_pose = quat_to_SE3(data["gelposes"][idx])
-                f.close()
-
-            return TactoFrame(
-                rgbframe=i,
-                heightmap=h,
-                contactmask=c,
-                pointcloud=Renderer.get_ycbslide_renderer().heightmap_to_pointcloud(h)[
-                    c.reshape(-1)
-                ],
-                campose=cam_pose,
-                gelpose=gel_pose,
-            )
-        except Exception as e:
-            print(f"Error loading TactoFrame from YCB slide: {e}")
-            return None
-
 
 class TactoPro:
     def __init__(self, trimesh_path: str, config: RendererConfig = RendererConfig()):
@@ -284,3 +254,84 @@ class TactoPro:
         return frames
 
     pass
+
+
+def load_from_ycbslide(file_path: str, idx: int) -> TactoFrame:
+    """
+    Loads a single TactoFrame from a YCB slide dataset.
+    Args:
+        file_path (str): The path to the directory containing the YCB slide data.
+        idx (int): The index of the frame to load.
+    Returns:
+        TactoFrame: A TactoFrame object loaded from the specified index in the YCB slide dataset.
+    """
+    try:
+        c_path = os.path.join(file_path, "gt_contactmasks", f"{idx}.jpg")
+        h_path = os.path.join(file_path, "gt_heightmaps", f"{idx}.jpg")
+        i_path = os.path.join(file_path, "tactile_images", f"{idx}.jpg")
+        c = np.array(Image.open(c_path)).astype(bool)
+        h = np.array(Image.open(h_path)).astype(np.int64)
+        i = np.array(Image.open(i_path)).astype(np.uint8)
+
+        with open(os.path.join(file_path, "tactile_data.pkl"), "rb") as f:
+            data = pickle.load(f)
+            cam_pose = quat_to_SE3(data["camposes"][idx])
+            gel_pose = quat_to_SE3(data["gelposes"][idx])
+            f.close()
+
+        return TactoFrame(
+            rgbframe=i,
+            heightmap=h,
+            contactmask=c,
+            pointcloud=Renderer.get_ycbslide_renderer().heightmap_to_pointcloud(h)[
+                c.reshape(-1)
+            ],
+            campose=cam_pose,
+            gelpose=gel_pose,
+        )
+    except Exception as e:
+        print(f"Error loading TactoFrame from YCB slide: {e}")
+        return None
+
+
+def load_from_ycbslide_dir(file_path: str) -> List[TactoFrame]:
+    """
+    Loads TactoFrames from a directory containing YCB slide data.
+    Args:
+        file_path (str): The path to the directory containing the YCB slide data.
+    Returns:
+        List[TactoFrame]: A list of TactoFrame objects loaded from the specified directory.
+    """
+    with open(os.path.join(file_path, "tactile_data.pkl"), "rb") as f:
+        data = pickle.load(f)
+        cam_pose = quat_to_SE3(data["camposes"])
+        gel_pose = quat_to_SE3(data["gelposes"])
+        f.close()
+
+    frames = []
+    idx = 0
+    while True:
+        try:
+            c_path = os.path.join(file_path, "gt_contactmasks", f"{idx}.jpg")
+            h_path = os.path.join(file_path, "gt_heightmaps", f"{idx}.jpg")
+            i_path = os.path.join(file_path, "tactile_images", f"{idx}.jpg")
+            c = np.array(Image.open(c_path)).astype(bool)
+            h = np.array(Image.open(h_path)).astype(np.int64)
+            i = np.array(Image.open(i_path)).astype(np.uint8)
+
+            frame = TactoFrame(
+                rgbframe=i,
+                heightmap=h,
+                contactmask=c,
+                pointcloud=Renderer.get_ycbslide_renderer().heightmap_to_pointcloud(h)[
+                    c.reshape(-1)
+                ],
+                campose=cam_pose[idx],
+                gelpose=gel_pose[idx],
+            )
+            frames.append(frame)
+            idx += 1
+            break
+        except FileNotFoundError:
+            print("No contact masks found, waiting for data to be available...")
+            idx = 0
