@@ -10,6 +10,8 @@ from .renderer import Renderer, RendererConfig
 from .helpers.viz import viz_poses_pointclouds_on_mesh
 from .helpers.mesh import sample_poses_on_mesh, random_geodesic_poses
 from tqdm import tqdm
+from PIL import Image
+from .helpers.pose import quat_to_SE3
 
 
 @dataclass
@@ -31,15 +33,47 @@ class TactoFrame:
     campose: np.ndarray
     gelpose: np.ndarray
 
+    def get_world_pcd(self) -> np.ndarray:
+        """
+        Returns the point cloud in world coordinates.
+        """
+        R = self.campose[:3, :3]
+        t = self.campose[:3, 3]
+        return (R @ self.pointcloud.T).T + t
+
+    @staticmethod
+    def load_from_ycbslide(file_path: str, idx: int) -> "TactoFrame":
+        try:
+            c_path = os.path.join(file_path, "gt_contactmasks", f"{idx}.jpg")
+            h_path = os.path.join(file_path, "gt_heightmaps", f"{idx}.jpg")
+            i_path = os.path.join(file_path, "tactile_images", f"{idx}.jpg")
+            c = np.array(Image.open(c_path)).astype(bool)
+            h = np.array(Image.open(h_path)).astype(np.int64)
+            i = np.array(Image.open(i_path)).astype(np.uint8)
+
+            with open(os.path.join(file_path, "tactile_data.pkl"), "rb") as f:
+                data = pickle.load(f)
+                cam_pose = quat_to_SE3(data["camposes"][idx])
+                gel_pose = quat_to_SE3(data["gelposes"][idx])
+                f.close()
+
+            return TactoFrame(
+                rgbframe=i,
+                heightmap=h,
+                contactmask=c,
+                pointcloud=Renderer.get_ycbslide_renderer().heightmap_to_pointcloud(h)[
+                    c.reshape(-1)
+                ],
+                campose=cam_pose,
+                gelpose=gel_pose,
+            )
+        except Exception as e:
+            print(f"Error loading TactoFrame from YCB slide: {e}")
+            return None
+
 
 class TactoPro:
-    def __init__(
-        self,
-        trimesh_path: str,
-        config: RendererConfig = RendererConfig(),
-        headless: bool = False,
-        randomize: bool = False,
-    ):
+    def __init__(self, trimesh_path: str, config: RendererConfig = RendererConfig()):
         self._trimesh = trimesh.load_mesh(trimesh_path)
         self._renderer = Renderer(config=config, trimesh_path=trimesh_path)
         self._config = config
@@ -184,9 +218,7 @@ class TactoPro:
             # prepare point cloud
             pc_all = []
             for i, frame in enumerate(frames[::10]):
-                pc_body = self._renderer.heightmap_to_pointcloud(frame.heightmap)[
-                    frame.contactmask.reshape(-1)
-                ]
+                pc_body = frame.pointcloud
                 R = frame.campose[:3, :3]
                 t = frame.campose[:3, 3]
                 pc_world = (R @ pc_body.T).T + t

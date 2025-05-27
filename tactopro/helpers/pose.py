@@ -120,3 +120,17 @@ def pose_from_vertex_normal(
     tfs = np.einsum("ijn,jkn->ikn", RotDelta, Rot)
     T[:, :3, :3] = np.rollaxis(tfs, 2)
     return T
+
+
+def quat_to_SE3(position_quat):
+    """Convert position and quaternion to SE(3) transformation matrix."""
+    try:
+        position_quat = np.atleast_2d(position_quat)
+        N = position_quat.shape[0]
+        T = np.zeros((4, 4, N))
+        T[:3, :3, :] = np.moveaxis(R.from_quat(position_quat[:, 3:]).as_matrix(), 0, -1)
+        T[:3, 3, :] = position_quat[:, :3].T
+        T[3, 3, :] = 1
+    except ValueError:
+        print("Zero quat error!")
+    return T.squeeze() if N == 1 else np.rollaxis(T, 2)

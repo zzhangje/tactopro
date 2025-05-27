@@ -41,7 +41,9 @@ class RendererConfig:
 
 
 class Renderer:
-    def __init__(self, config: RendererConfig, trimesh_path: str = None):
+    def __init__(
+        self, config: RendererConfig = RendererConfig(), trimesh_path: str = None
+    ):
 
         self.render_config = config
 
@@ -73,6 +75,25 @@ class Renderer:
             self.renderer.add_object(obj_trimesh, "object")
 
         self.press_depth = 0.001
+
+    @staticmethod
+    def get_ycbslide_renderer() -> "Renderer":
+        """
+        Returns a RendererConfig instance with parameters suitable for YcbSlide.
+        """
+        return Renderer(
+            RendererConfig(
+                pixmm=0.03,
+                width=240,
+                height=320,
+                cam_dist=0.022,
+                min_pen=0.0005,
+                max_pen=0.001,
+                bg_id=30,
+                headless=False,
+                randomize=False,
+            )
+        )
 
     def get_background(self, frame="gel"):
         """
@@ -353,3 +374,17 @@ class Renderer:
                 idx += 1
 
         return heightmaps, contactMasks, images, camposes, gelposes
+
+
+def ycb_slide_heightmap_to_pointcloud(
+    heightmap: np.ndarray, renderer: Renderer
+) -> np.ndarray:
+    """
+    Convert a heightmap to a point cloud using the given renderer.
+    Args:
+        heightmap (np.ndarray): The heightmap to convert.
+        renderer (Renderer): The renderer to use for conversion.
+    Returns:
+        np.ndarray: The resulting point cloud.
+    """
+    return renderer.heightmap_to_pointcloud(heightmap)
