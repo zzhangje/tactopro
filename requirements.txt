@@ -4,3 +4,4 @@ pyvista
 potpourri3d
 scikit-learn
 tqdm
+open3d
