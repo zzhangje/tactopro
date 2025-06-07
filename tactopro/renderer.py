@@ -42,7 +42,7 @@ class RendererConfig:
 
 class Renderer:
     def __init__(
-        self, config: RendererConfig = RendererConfig(), trimesh_path: str = None
+        self, config: RendererConfig = RendererConfig(), trimesh_path: str = ""
     ):
 
         self.render_config = config
@@ -69,7 +69,7 @@ class Renderer:
             self.bg_depth = self.bg_depth[0]
             self.bg_depth_pix = self.correct_pyrender_height_map(self.bg_depth)
 
-        if trimesh_path is not None:
+        if trimesh_path != "":
             self.obj_loader = object_loader(trimesh_path)
             obj_trimesh = trimesh.load(trimesh_path)
             self.renderer.add_object(obj_trimesh, "object")

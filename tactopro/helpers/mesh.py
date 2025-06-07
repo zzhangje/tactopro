@@ -32,7 +32,7 @@ def sample_mesh(
         if method == "even":
             sP, f = trimesh.sample.sample_surface_even(mesh, count=num_samples)
         else:
-            sP, f = trimesh.sample.sample_surface(mesh, count=num_samples)
+            sP, f, *_ = trimesh.sample.sample_surface(mesh, count=num_samples)
         sampled_points = np.vstack([sampled_points, sP])
         faces = np.concatenate([faces, f])
         if len(sampled_points) <= num_samples:
@@ -90,20 +90,22 @@ def sample_poses_on_mesh(
     mesh: trimesh.base.Trimesh,
     num_samples: int,
     edges: bool = True,
-    constraint: np.ndarray = None,
-    r: float = None,
+    constraint: np.ndarray = np.empty((0, 3)),
+    r: float = -1.0,
     shear_mag: float = 5.0,
 ) -> np.ndarray:
     """
     Sample mesh and generates candidate sensor poses
     """
-    if constraint is not None:
+    if constraint is not np.empty((0, 3)) and r > 0.0:
         constrainedSampledPoints, constrainedSampledNormals = np.empty(
             (0, 3)
         ), np.empty((0, 3))
         box = trimesh.creation.box(extents=[2 * r, 2 * r, 2 * r])
         box.apply_translation(constraint)
         constrainedMesh = mesh.slice_plane(box.facets_origin, -box.facets_normal)
+        if constrainedMesh is None:
+            raise ValueError("Slicing the mesh resulted in None. Check the constraint or mesh geometry.")
         while constrainedSampledPoints.shape[0] < num_samples:
             sP, sN = sample_mesh(constrainedMesh, num_samples * 100, method="even")
             dist = (np.linalg.norm(sP - constraint, axis=1)).squeeze()

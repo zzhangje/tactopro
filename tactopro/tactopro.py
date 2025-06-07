@@ -82,9 +82,12 @@ class TactoPro:
         Returns:
             np.ndarray: A numpy array of sampled poses along the trajectory.
         """
-        return random_geodesic_poses(
+        poses = random_geodesic_poses(
             self._trimesh, total_length=traj_length, N=num_samples
         )
+        if poses is None:
+            return np.empty((0, 4, 4))
+        return poses
 
     def sample_frames_uniformly(
         self, num_samples: int = 1000, shear_mag: float = 5.0, edges: bool = False
@@ -194,10 +197,7 @@ class TactoPro:
             # prepare point cloud
             pc_all = []
             for i, frame in enumerate(frames[::10]):
-                pc_body = frame.pointcloud
-                R = frame.campose[:3, :3]
-                t = frame.campose[:3, 3]
-                pc_world = (R @ pc_body.T).T + t
+                pc_world = frame.get_world_pcd()
                 pc_all.append(pc_world)
 
             # visualize point cloud
@@ -205,7 +205,7 @@ class TactoPro:
             try:
                 viz_poses_pointclouds_on_mesh(
                     self._trimesh,
-                    np.array([frame.gelpose for frame in frames[::5]]),
+                    [frame.gelpose for frame in frames[::5]],
                     pc_all,
                     decimation_factor=20,
                     save_path=illustration_path,
@@ -219,11 +219,11 @@ class TactoPro:
 
         pass
 
-    def get_frames_from_poses(self, poses: List[np.ndarray]) -> List[TactoFrame]:
+    def get_frames_from_poses(self, poses: np.ndarray) -> List[TactoFrame]:
         """
         Helper function to get frames from poses.
         Args:
-            poses (List[np.ndarray]): A list of 4x4 matrices representing the poses.
+            poses (np.ndarray): An array of 4x4 matrices representing the poses.
         Returns:
             List[TactoFrame]: A list of TactoFrame objects sampled at the specified poses.
         """
@@ -233,7 +233,6 @@ class TactoPro:
         num_batches = num_batches if (num_batches != 0) else 1
 
         frames = []
-        print(poses.shape)
 
         for idx in tqdm(range(num_batches)):
             idx_range = (
@@ -259,82 +258,17 @@ class TactoPro:
 
         return frames
 
-    pass
+    def get_pcd_from_frames(
+        self, frames: List[TactoFrame], total_points: int = 100000
+    ) -> o3d.geometry.PointCloud:
+        pcd = o3d.geometry.PointCloud()
+        points = []
+        points_per_frame = total_points // len(frames)
+        for frame in frames:
+            pc = frame.get_world_pcd()
+            indices = np.random.choice(len(pc), points_per_frame)
+            pc = pc[indices]
+            points.append(pc)
 
-
-def load_from_ycbslide(file_path: str, idx: int) -> TactoFrame:
-    """
-    Loads a single TactoFrame from a YCB slide dataset.
-    Args:
-        file_path (str): The path to the directory containing the YCB slide data.
-        idx (int): The index of the frame to load.
-    Returns:
-        TactoFrame: A TactoFrame object loaded from the specified index in the YCB slide dataset.
-    """
-    c_path = os.path.join(file_path, "gt_contactmasks", f"{idx}.jpg")
-    h_path = os.path.join(file_path, "gt_heightmaps", f"{idx}.jpg")
-    i_path = os.path.join(file_path, "tactile_images", f"{idx}.jpg")
-    c = np.array(Image.open(c_path)).astype(bool)
-    h = np.array(Image.open(h_path)).astype(np.int64)
-    i = np.array(Image.open(i_path)).astype(np.uint8)
-
-    with open(os.path.join(file_path, "tactile_data.pkl"), "rb") as f:
-        data = pickle.load(f)
-        cam_pose = quat_to_SE3(data["camposes"][idx])
-        gel_pose = quat_to_SE3(data["gelposes"][idx])
-        f.close()
-
-    return TactoFrame(
-        rgbframe=i,
-        heightmap=h,
-        contactmask=c,
-        pointcloud=Renderer.get_ycbslide_renderer().heightmap_to_pointcloud(h)[
-            c.reshape(-1)
-        ],
-        campose=cam_pose,
-        gelpose=gel_pose,
-    )
-
-
-def load_from_ycbslide_dir(file_path: str) -> List[TactoFrame]:
-    """
-    Loads TactoFrames from a directory containing YCB slide data.
-    Args:
-        file_path (str): The path to the directory containing the YCB slide data.
-    Returns:
-        List[TactoFrame]: A list of TactoFrame objects loaded from the specified directory.
-    """
-    with open(os.path.join(file_path, "tactile_data.pkl"), "rb") as f:
-        data = pickle.load(f)
-        cam_pose = quat_to_SE3(data["camposes"])
-        gel_pose = quat_to_SE3(data["gelposes"])
-        f.close()
-
-    frames = []
-    idx = 0
-    while True:
-        try:
-            c_path = os.path.join(file_path, "gt_contactmasks", f"{idx}.jpg")
-            h_path = os.path.join(file_path, "gt_heightmaps", f"{idx}.jpg")
-            i_path = os.path.join(file_path, "tactile_images", f"{idx}.jpg")
-            c = np.array(Image.open(c_path)).astype(bool)
-            h = np.array(Image.open(h_path)).astype(np.int64)
-            i = np.array(Image.open(i_path)).astype(np.uint8)
-            frame = TactoFrame(
-                rgbframe=i,
-                heightmap=h,
-                contactmask=c,
-                pointcloud=Renderer.get_ycbslide_renderer().heightmap_to_pointcloud(h)[
-                    c.reshape(-1)
-                ],
-                campose=cam_pose[idx],
-                gelpose=gel_pose[idx],
-            )
-            frames.append(frame)
-            idx += 1
-            if idx % 100 == 0:
-                print(f"Loaded {idx} frames from {file_path}")
-        except FileNotFoundError:
-            print("No file found, returning...")
-            break
-    return frames
+        pcd.points = o3d.utility.Vector3dVector(np.concatenate(points, axis=0))
+        return pcd

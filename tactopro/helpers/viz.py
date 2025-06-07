@@ -80,6 +80,49 @@ def viz_poses_pointclouds_on_mesh(
     pv.close_all()
 
 
+def viz_pointclouds_on_mesh(
+    trimesh: trimesh.Trimesh,
+    pointcloud: np.ndarray,
+    save_path: str,
+) -> None:
+    """
+    Visualizes a set of 4x4 pose matrices and associated pointclouds on a given mesh using PyVista.
+
+    Args:
+        trimesh (trimesh.Trimesh): The mesh to visualize. Shape: (varies by mesh).
+        pointclouds (np.ndarray): Array of shape (N, 3) representing N points.
+        save_path (str): Path to save the rendered image. If empty, shows interactively.
+        decimation_factor (int, optional): Factor to downsample each pointcloud for visualization. Defaults to 10.
+    """
+    plotter = pv.Plotter(window_size=[2000, 2000], off_screen=True)
+
+    mesh = pv.wrap(trimesh)
+    dargs = dict(
+        color="grey",
+        ambient=0.6,
+        opacity=0.5,
+        smooth_shading=True,
+        specular=1.0,
+        show_scalar_bar=False,
+        render=False,
+    )
+    plotter.add_mesh(mesh, **dargs)
+
+    if pointcloud.shape[0]:
+        pc = pv.PolyData(pointcloud)
+        plotter.add_points(
+            pc, render_points_as_spheres=True, color="#26D701", point_size=3
+        )
+
+    if save_path:
+        plotter.show(screenshot=save_path)
+    else:
+        plotter.show()
+
+    plotter.close()
+    pv.close_all()
+
+
 def draw_poses(
     plotter: pv.Plotter,
     mesh: pv.DataSet,
