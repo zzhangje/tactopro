@@ -6,12 +6,12 @@ import os.path as osp
 import os
 import pickle
 import cv2
-from .renderer import Renderer, RendererConfig
-from .helpers.viz import viz_poses_pointclouds_on_mesh
-from .helpers.mesh import sample_poses_on_mesh, random_geodesic_poses
+from tactopro.renderer import Renderer, RendererConfig
+from tactopro.helpers.viz import viz_poses_pointclouds_on_mesh
+from tactopro.helpers.mesh import sample_poses_on_mesh, random_geodesic_poses
 from tqdm import tqdm
 from PIL import Image
-from .helpers.pose import quat_to_SE3
+from tactopro.helpers.pose import quat_to_SE3
 import open3d as o3d
 
 

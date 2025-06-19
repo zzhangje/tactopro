@@ -105,7 +105,9 @@ def sample_poses_on_mesh(
         box.apply_translation(constraint)
         constrainedMesh = mesh.slice_plane(box.facets_origin, -box.facets_normal)
         if constrainedMesh is None:
-            raise ValueError("Slicing the mesh resulted in None. Check the constraint or mesh geometry.")
+            raise ValueError(
+                "Slicing the mesh resulted in None. Check the constraint or mesh geometry."
+            )
         while constrainedSampledPoints.shape[0] < num_samples:
             sP, sN = sample_mesh(constrainedMesh, num_samples * 100, method="even")
             dist = (np.linalg.norm(sP - constraint, axis=1)).squeeze()

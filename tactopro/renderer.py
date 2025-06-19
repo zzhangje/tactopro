@@ -13,7 +13,7 @@ import tacto
 from tacto.loaders.object_loader import object_loader
 from tacto.renderer import euler2matrix
 import cv2
-from .helpers.pose import pose_from_vertex_normal
+from tactopro.helpers.pose import pose_from_vertex_normal
 from scipy.spatial.transform import Rotation as R
 
 import trimesh
