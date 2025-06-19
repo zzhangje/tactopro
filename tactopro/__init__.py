@@ -1,3 +1,6 @@
+from . import helpers
+from . import dataset
+
 from .tactopro import TactoPro, TactoFrame
 from .renderer import RendererConfig as Config
 from .dataset.ycb_slide import load_ycb_slide_path, load_ycb_slide_frame
