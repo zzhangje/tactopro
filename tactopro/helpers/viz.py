@@ -8,6 +8,7 @@
 import numpy as np
 import pyvista as pv
 import trimesh
+import cv2
 from typing import List
 from scipy.spatial.transform import Rotation as R
 
@@ -18,7 +19,7 @@ def viz_poses_pointclouds_on_mesh(
     pointclouds: List[np.ndarray],
     save_path: str,
     decimation_factor: int = 10,
-) -> None:
+) -> np.ndarray:
     """
     Visualizes a set of 4x4 pose matrices and associated pointclouds on a given mesh using PyVista.
 
@@ -78,13 +79,15 @@ def viz_poses_pointclouds_on_mesh(
 
     plotter.close()
     pv.close_all()
+    return cv2.imread(save_path) if save_path else np.array([])
 
 
 def viz_pointclouds_on_mesh(
     trimesh: trimesh.Trimesh,
     pointcloud: np.ndarray,
     save_path: str,
-) -> None:
+    mesh_color: str = "grey",
+) -> np.ndarray:
     """
     Visualizes a set of 4x4 pose matrices and associated pointclouds on a given mesh using PyVista.
 
@@ -98,7 +101,7 @@ def viz_pointclouds_on_mesh(
 
     mesh = pv.wrap(trimesh)
     dargs = dict(
-        color="grey",
+        color=mesh_color,
         ambient=0.6,
         opacity=0.5,
         smooth_shading=True,
@@ -121,6 +124,7 @@ def viz_pointclouds_on_mesh(
 
     plotter.close()
     pv.close_all()
+    return cv2.imread(save_path) if save_path else np.array([])
 
 
 def draw_poses(
