@@ -33,7 +33,7 @@ def check_frame(frame, config):
 
     assert frame.pointcloud is not None, "Point cloud should be present."
     assert frame.pointcloud.shape == (
-        frame.contactmask.sum(),
+        config.height * config.width,
         3,
     ), f"Point cloud should have shape ({frame.contactmask.sum()}, 3), but got {frame.pointcloud.shape}."
 
