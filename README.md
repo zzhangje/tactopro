@@ -6,10 +6,10 @@ TACTO Pro is a lightweight wrapper designed to streamline the creation of TACTO 
 
 With `tactopro`, there's no need to manually interact with the `tacto` package or write extensive custom code to sample tactile images. Simply follow this workflow:
 
-```py
-from tactopro import TactoPro
+```python
+from tactopro import TactoPro, TactoConfig
 
-tp = TactoPro("public/hkust.stl")
+tp = TactoPro("public/hkust.stl", config=TactoConfig())
 frames = tp.sample_frames_uniformly(500)
 tp.save(frames, "public/hkust")
 ```

@@ -197,7 +197,7 @@ class TactoPro:
             # prepare point cloud
             pc_all = []
             for i, frame in enumerate(frames[::10]):
-                pc_world = frame.get_world_pcd()
+                pc_world = frame.get_world_pcd()[frame.contactmask.reshape(-1)]
                 pc_all.append(pc_world)
 
             # visualize point cloud
