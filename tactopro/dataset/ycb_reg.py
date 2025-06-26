@@ -1,6 +1,6 @@
 import os
 import pickle
-from typing import Optional, List
+from typing import Optional, List, Tuple
 import trimesh
 from trimesh.base import Trimesh
 import open3d as o3d
@@ -11,7 +11,7 @@ from tactopro.helpers.viz import viz_pointclouds_on_mesh
 
 def load_ycb_reg(
     path: str,
-) -> tuple[
+) -> Tuple[
     o3d.geometry.TriangleMesh,
     o3d.geometry.PointCloud,
     o3d.geometry.PointCloud,
