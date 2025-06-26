@@ -48,9 +48,7 @@ def load_ycb_slide_frame(file_path: str, idx: int) -> TactoFrame:
         rgbframe=i,
         heightmap=h,
         contactmask=c,
-        pointcloud=Renderer.get_ycbslide_renderer().heightmap_to_pointcloud(h)[
-            c.reshape(-1)
-        ],
+        pointcloud=Renderer.get_ycbslide_renderer().heightmap_to_pointcloud(h),
         campose=cam_pose,
         gelpose=gel_pose,
     )

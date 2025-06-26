@@ -2,7 +2,7 @@ from . import helpers
 from . import dataset
 
 from .tactopro import TactoPro, TactoFrame
-from .renderer import RendererConfig as Config
+from .renderer import RendererConfig as TactoConfig
 from .dataset.ycb_slide import load_ycb_slide_path, load_ycb_slide_frame
 from .dataset.ycb_slide import __available_dir__ as __ycbslide_available_dir__
 from .dataset.ycb_objects import __available_dir__ as __ycb_available_dir__

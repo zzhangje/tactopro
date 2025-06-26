@@ -248,9 +248,7 @@ class TactoPro:
                     rgbframe=rgbframes[i],
                     heightmap=heightmaps[i],
                     contactmask=contactmasks[i],
-                    pointcloud=self._renderer.heightmap_to_pointcloud(heightmaps[i])[
-                        contactmasks[i].reshape(-1)
-                    ],
+                    pointcloud=self._renderer.heightmap_to_pointcloud(heightmaps[i]),
                     campose=camposes[i],
                     gelpose=gelposes[i],
                 )
@@ -265,7 +263,7 @@ class TactoPro:
         points = []
         points_per_frame = total_points // len(frames)
         for frame in frames:
-            pc = frame.get_world_pcd()
+            pc = frame.get_world_pcd()[frame.contactmask.reshape(-1)]
             indices = np.random.choice(len(pc), points_per_frame)
             pc = pc[indices]
             points.append(pc)
