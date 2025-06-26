@@ -1,9 +1,9 @@
 import pytest
-from tactopro import Config
+from tactopro import TactoConfig
 
 
 @pytest.fixture(scope="session")
 def config():
-    cfg = Config()
+    cfg = TactoConfig()
     cfg.headless = True
     return cfg
