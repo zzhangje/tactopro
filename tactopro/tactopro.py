@@ -205,7 +205,7 @@ class TactoPro:
             try:
                 viz_poses_pointclouds_on_mesh(
                     self._trimesh,
-                    [frame.gelpose for frame in frames[::5]],
+                    np.array([frame.gelpose for frame in frames[::5]]),
                     pc_all,
                     decimation_factor=20,
                     save_path=illustration_path,

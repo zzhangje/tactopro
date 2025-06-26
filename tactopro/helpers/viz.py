@@ -15,7 +15,7 @@ from scipy.spatial.transform import Rotation as R
 
 def viz_poses_pointclouds_on_mesh(
     trimesh: trimesh.Trimesh,
-    poses: List[np.ndarray],
+    poses: np.ndarray,
     pointclouds: List[np.ndarray],
     save_path: str,
     decimation_factor: int = 10,
@@ -25,7 +25,7 @@ def viz_poses_pointclouds_on_mesh(
 
     Args:
         trimesh (trimesh.Trimesh): The mesh to visualize. Shape: (varies by mesh).
-        poses (List[np.ndarray]): List of N pose matrices, each of shape (4, 4).
+        poses (np.ndarray): Array of shape (N, 4, 4) representing N pose matrices.
         pointclouds (List[np.ndarray]): List of N pointclouds, each of shape (M_i, 3).
         save_path (str): Path to save the rendered image. If empty, shows interactively.
         decimation_factor (int, optional): Factor to downsample each pointcloud for visualization. Defaults to 10.
@@ -87,6 +87,7 @@ def viz_pointclouds_on_mesh(
     pointcloud: np.ndarray,
     save_path: str,
     mesh_color: str = "grey",
+    point_color: str = "#26D701",
 ) -> np.ndarray:
     """
     Visualizes a set of 4x4 pose matrices and associated pointclouds on a given mesh using PyVista.
@@ -114,7 +115,7 @@ def viz_pointclouds_on_mesh(
     if pointcloud.shape[0]:
         pc = pv.PolyData(pointcloud)
         plotter.add_points(
-            pc, render_points_as_spheres=True, color="#26D701", point_size=3
+            pc, render_points_as_spheres=True, color=point_color, point_size=3
         )
 
     if save_path:
