@@ -40,7 +40,7 @@ class TactoFrame:
         """
         Rwb = self.campose[:3, :3]
         twb = self.campose[:3, 3]
-        return (Rwb @ self.pointcloud.T).T + twb
+        return self.pointcloud @ Rwb.T + twb
 
 
 class TactoPro:
