@@ -124,6 +124,8 @@ def pose_from_vertex_normal(
 
 def quat_to_SE3(position_quat):
     """Convert position and quaternion to SE(3) transformation matrix."""
+    N = 0  # Initialize N to avoid unbound error
+    T = np.zeros((4, 4, 1))  # Default initialization to avoid unbound error
     try:
         position_quat = np.atleast_2d(position_quat)
         N = position_quat.shape[0]
