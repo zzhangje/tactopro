@@ -1,8 +1,0 @@
-tacto @ git+https://github.com/zhangzrjerry/tactopatch.git
-
-pyvista
-potpourri3d
-scikit-learn
-tqdm
-open3d
-dill
