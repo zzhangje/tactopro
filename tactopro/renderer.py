@@ -264,14 +264,20 @@ class Renderer:
         heightmap_3d = heightmap_3d[heightmap_3d[:, 2] != 0]
         return heightmap_3d
 
-    def render_sensor_trajectory(self, p, mNoise=None, pen_ratio=1.0, over_pen=False):
+    def render_sensor_trajectory(
+        self, p, mNoise=None, pen_ratio=1.0, over_pen=False
+    ) -> tuple:
         """
         Render a trajectory of poses p via tac_render
         """
         p = np.atleast_3d(p)
 
         N = p.shape[0]
-        images, heightmaps, contactMasks = [None] * N, [None] * N, [None] * N
+        images, heightmaps, contactMasks = (
+            np.empty(N, dtype=object),
+            np.empty(N, dtype=object),
+            np.empty(N, dtype=object),
+        )
         gelposes, camposes = np.zeros([N, 4, 4]), np.zeros([N, 4, 4])
 
         min_press, max_press = (
@@ -314,18 +320,17 @@ class Renderer:
             idx += 1
 
         # measurement with noise
-        # rotNoise = np.random.normal(loc=0.0, scale=mNoise["sig_r"], size=(N, 3))
-        # Rn = R.from_euler("zyx", rotNoise, degrees=True).as_matrix()  # (N, 3, 3)
-        # tn = np.random.normal(loc=0.0, scale=mNoise["sig_t"], size=(N, 3))
-        # Tn = np.zeros((N, 4, 4))
-        # Tn[:, :3, :3], Tn[:, :3, 3], Tn[:, 3, 3] = Rn, tn, 1
+        if mNoise is not None:
+            rotNoise = np.random.normal(loc=0.0, scale=mNoise["sig_r"], size=(N, 3))
+            Rn = R.from_euler("zyx", rotNoise, degrees=True).as_matrix()  # (N, 3, 3)
+            tn = np.random.normal(loc=0.0, scale=mNoise["sig_t"], size=(N, 3))
+            Tn = np.zeros((N, 4, 4))
+            Tn[:, :3, :3], Tn[:, :3, 3], Tn[:, 3, 3] = Rn, tn, 1
+            gelposes_meas = gelposes @ Tn
+        else:
+            gelposes_meas = gelposes
 
-        # gelposes_meas = gelposes @ Tn
-        # gelposes_meas = tf_to_xyzquat_numpy(gelposes_meas)
-        # gelposes = tf_to_xyzquat_numpy(gelposes)
-        # camposes = tf_to_xyzquat_numpy(camposes)
-
-        return heightmaps, contactMasks, images, camposes, gelposes  # , gelposes_meas
+        return heightmaps, contactMasks, images, camposes, gelposes, gelposes_meas
 
     def render_sensor_poses(self, p, num_depths=1, no_contact_prob=0):
         """

@@ -240,7 +240,7 @@ class TactoPro:
                 if idx == num_batches - 1
                 else np.array(range(idx * batch_size, (idx + 1) * batch_size))
             )
-            (heightmaps, contactmasks, rgbframes, camposes, gelposes) = (
+            (heightmaps, contactmasks, rgbframes, camposes, gelposes, _) = (
                 self._renderer.render_sensor_trajectory(poses[idx_range, :])
             )
             for i in range(len(rgbframes)):
