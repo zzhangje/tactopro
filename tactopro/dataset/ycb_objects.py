@@ -69,14 +69,12 @@ __available_dir__ = [
 ]
 
 
-def load_ycb_object(file_name: str) -> Optional[Trimesh]:
+def load_ycb_object(file_name: str) -> Trimesh:
     """
     Load a YCB object mesh from the assets directory.
     """
     file_path = os.path.join(__dataset_path__, file_name, "nontextured.stl")
-    if os.path.isfile(file_path):
-        return trimesh.load_mesh(file_path)
-    return None
+    return trimesh.load_mesh(file_path)
 
 
 def get_ycb_object_path(file_name: str) -> str:
