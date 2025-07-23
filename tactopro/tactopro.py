@@ -43,6 +43,9 @@ class TactoFrame:
         twb = self.campose[:3, 3]
         return self.pointcloud @ Rwb.T + twb
 
+    def get_centroid(self) -> np.ndarray:
+        return self.campose[:3, 3]
+
 
 class TactoPro:
     def __init__(self, trimesh_path: str, config: RendererConfig = RendererConfig()):
@@ -275,13 +278,18 @@ class TactoPro:
         pcd = o3d.geometry.PointCloud()
         points = []
         points_per_frame = total_points // len(frames)
+
         for frame in frames:
             pc = frame.get_world_pcd()[frame.contactmask.reshape(-1)]
+
             if trans_noise > 0.0:
                 pc += np.random.normal(scale=trans_noise, size=pc.shape)
+
             if rot_noise > 0.0:
-                rot = R.random().as_rotvec() * rot_noise
-                pc = R.from_rotvec(rot).apply(pc)
+                rot_vec = np.random.normal(scale=rot_noise, size=3)
+                rot = R.from_rotvec(np.radians(rot_vec))
+                pc = rot.apply(pc - frame.get_centroid()) + frame.get_centroid()
+
             indices = np.random.choice(len(pc), points_per_frame)
             pc = pc[indices]
             points.append(pc)
