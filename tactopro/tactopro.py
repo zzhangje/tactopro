@@ -283,10 +283,12 @@ class TactoPro:
             pc = frame.get_world_pcd()[frame.contactmask.reshape(-1)]
 
             if trans_noise > 0.0:
-                pc += np.random.normal(scale=trans_noise, size=pc.shape)
+                trans_vec = np.random.normal(size=3)
+                pc += trans_vec / np.linalg.norm(trans_vec) * trans_noise
 
             if rot_noise > 0.0:
-                rot_vec = np.random.normal(scale=rot_noise, size=3)
+                rot_vec = np.random.normal(size=3)
+                rot_vec = rot_vec / np.linalg.norm(rot_vec) * rot_noise
                 rot = R.from_rotvec(np.radians(rot_vec))
                 pc = rot.apply(pc - frame.get_centroid()) + frame.get_centroid()
 
