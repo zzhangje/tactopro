@@ -13,6 +13,7 @@ from tqdm import tqdm
 from PIL import Image
 from .helpers.pose import quat_to_SE3
 import open3d as o3d
+from scipy.spatial.transform import Rotation as R
 
 
 @dataclass
@@ -257,16 +258,37 @@ class TactoPro:
         return frames
 
     def get_pcd_from_frames(
-        self, frames: List[TactoFrame], total_points: int = 100000
+        self,
+        frames: List[TactoFrame],
+        total_points: int = 100000,
+        trans_noise: float = 0.0,
+        rot_noise: float = 0.0,
     ) -> o3d.geometry.PointCloud:
+        """
+        Generates a point cloud from the given frames.
+        Args:
+            frames (List[TactoFrame]): A list of TactoFrame objects.
+            total_points (int): The total number of points to sample from the frames.
+            trans_noise (float): The translation noise to apply to the point cloud in meters.
+            rot_noise (float): The rotation noise to apply to the point cloud in degrees.
+        """
         pcd = o3d.geometry.PointCloud()
         points = []
         points_per_frame = total_points // len(frames)
         for frame in frames:
             pc = frame.get_world_pcd()[frame.contactmask.reshape(-1)]
+            if trans_noise > 0.0:
+                pc += np.random.normal(scale=trans_noise, size=pc.shape)
+            if rot_noise > 0.0:
+                rot = R.random().as_rotvec() * rot_noise
+                pc = R.from_rotvec(rot).apply(pc)
             indices = np.random.choice(len(pc), points_per_frame)
             pc = pc[indices]
             points.append(pc)
 
-        pcd.points = o3d.utility.Vector3dVector(np.concatenate(points, axis=0))
+        if len(points) > 0:
+            pcd.points = o3d.utility.Vector3dVector(np.concatenate(points, axis=0))
+        else:
+            pcd.points = o3d.utility.Vector3dVector(np.empty((0, 3)))
+
         return pcd

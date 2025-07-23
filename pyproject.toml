@@ -21,7 +21,7 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
 ]
 dependencies = [
-    "tacto @ git+https://github.com/zhangzrjerry/tactopatch.git",
+    "tacto @ git+https://github.com/zzhangje/tacto-community.git",
     "pyvista",
     "potpourri3d",
     "scikit-learn",
