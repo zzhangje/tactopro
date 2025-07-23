@@ -33,5 +33,12 @@ dependencies = [
 
 [tool.setuptools]
 include-package-data = true
-packages = {find = {}}
-package-data = {"tactopro" = ["tactopro/assets/**"]}
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["tactopro*"]
+
+[tool.setuptools.package-data]
+tactopro = [
+    "assets/**",
+]
